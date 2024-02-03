@@ -14,9 +14,9 @@ ALLOWED_ID = os.getenv('TELEGRAM_ALLOWED_ID')
 # Initialize bot
 bot = telebot.TeleBot(BOT_TOKEN)
 
-# Define additional functions
 def list_bat_files():
-    return [f for f in os.listdir('.') if f.endswith('.bat')]
+    # Exclude 'run_script.bat' from the list
+    return [f for f in os.listdir('.') if f.endswith('.bat') and f != 'run_script.bat']
 
 # Handler functions
 @bot.message_handler(commands=['start'])
