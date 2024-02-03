@@ -1,6 +1,6 @@
-# Telegram Display Configuration Bot
+# Telegram Display Configuration Bot (Batter Bot)
 
-This Python-based Telegram bot facilitates remote management of PC display configurations through the execution of specific .bat files located in the same directory as the script. It is designed to offer a convenient interface for users to change their display settings via Telegram commands.
+This Python-based Telegram bot facilitates remote management of PC display configurations through the execution of specific .bat files located in the same directory as the script. It is designed to offer a convenient interface for users to change their display settings via Telegram commands. Originally named Batter Bot after the intended purpose of running `.bat` files. Thus, `.bat`ter Bot!
 
 ## Features
 
