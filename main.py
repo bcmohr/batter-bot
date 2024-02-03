@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
-import os, logging
+import os, subprocess, logging
 import telebot
+from telebot import types
 
 # Enable logging
 logging.basicConfig(filename='bot_activity.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -12,6 +13,10 @@ ALLOWED_ID = os.getenv('TELEGRAM_ALLOWED_ID')
 
 # Initialize bot
 bot = telebot.TeleBot(BOT_TOKEN)
+
+# Define additional functions
+def list_bat_files():
+    return [f for f in os.listdir('.') if f.endswith('.bat')]
 
 # Handler functions
 @bot.message_handler(commands=['start'])
@@ -26,6 +31,30 @@ def send_chat_id(message):
     response_message = f"🤖 Your Chat ID is: {chat_id}"
     bot.reply_to(message, response_message)
     logging.info(f'Chat ID requested by user {chat_id}')
+
+@bot.message_handler(commands=['runbat'])
+def send_bat_files(message):
+    bat_files = list_bat_files()
+    if not bat_files:
+        bot.send_message(message.chat.id, "No .bat files found.")
+        return
+    
+    markup = types.InlineKeyboardMarkup()
+    for file in bat_files:
+        markup.add(types.InlineKeyboardButton(file, callback_data=file))
+    bot.send_message(message.chat.id, "Choose a .bat file to run:", reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: True)
+def handle_file_selection(call):
+    bat_file = call.data
+    if bat_file in list_bat_files():
+        try:
+            subprocess.run(bat_file, shell=True, check=True)
+            bot.answer_callback_query(call.id, f"{bat_file} executed successfully!")
+        except subprocess.CalledProcessError as e:
+            bot.answer_callback_query(call.id, f"Failed to execute {bat_file}: {e}")
+    else:
+        bot.answer_callback_query(call.id, "File not found.")
 
 #########################
 # Main bot polling loop #
