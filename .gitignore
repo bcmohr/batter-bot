@@ -1,6 +1,9 @@
 # Exclude the .bat files to be run
 *.bat
 
+# Exclude the .vbs files to be run
+*.vbs
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
