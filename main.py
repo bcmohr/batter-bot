@@ -6,10 +6,19 @@ from telebot import types
 # Enable logging
 logging.basicConfig(filename='bot_activity.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
+# Check if any arguments are provided
+# (useful for finding the right python.exe instance in task manager's "command" column)
+if len(sys.argv) > 1:
+    arg = sys.argv[1]
+    logging.info(f'Script "batter-bot" started with argument: {arg}')
+else:
+    logging.info('Script "batter-bot" started without arguments')
+
 # Environment Variables
 load_dotenv() # Load environment variables from .env file
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-ALLOWED_ID = os.getenv('TELEGRAM_ALLOWED_ID')
+ALLOWED_ID = int(os.getenv('TELEGRAM_ALLOWED_ID'))
+PC_NAME = os.getenv('PC_NAME')
 
 # Initialize bot
 bot = telebot.TeleBot(BOT_TOKEN)
