@@ -51,7 +51,7 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 def list_bat_files():
     # Exclude 'run_script.bat' from the list
-    return [f for f in os.listdir('.') if f.endswith('.bat') and f != 'run_script.bat']
+    return [f for f in os.listdir('./bats') if f.endswith('.bat') and f != 'run_script.bat']
 
 #####################
 # Handler Functions #
@@ -73,7 +73,7 @@ def send_status(message):
         logging.info(f'Bot sent status to user {message.chat.id}')
         logging.info(f'Status message: {status_message}')
     else:
-        logging.warning(f"⚠️ Unauthorized status request by user {message.chat.id}", parse_mode='Markdown')
+        logging.warning(f"⚠️ Unauthorized status request by user {message.chat.id}")
         bot.send_message(ALLOWED_ID, f"⚠️ Unauthorized status request by user {message.chat.id}")
 
 """ # No need to expose this publicly now that I already know my chat id
@@ -83,7 +83,7 @@ def send_chat_id(message):
     logging.info(f'Chat ID requested by user {message.chat.id}')
 """
 
-@bot.message_handler(commands=['runbat','bat'])
+@bot.message_handler(commands=['runbat','bat','bats'])
 def send_bat_files(message):
     if message.chat.id == ALLOWED_ID:
         bat_files = list_bat_files()
@@ -98,8 +98,8 @@ def send_bat_files(message):
         bot.send_message(message.chat.id, "🖥️ Tap a `.bat` file to run it:", reply_markup=markup, parse_mode='Markdown')
         logging.info(f'.bat files list sent to user {message.chat.id}')
     else:
-        logging.warning(f"⚠️ Unauthorized `.bat` list attempt by user {message.chat.id}", parse_mode='Markdown')
-        bot.send_message(ALLOWED_ID, f"⚠️ Unauthorized .bat list attempt by user {message.chat.id}")
+        logging.warning(f"⚠️ Unauthorized .bat list attempt by user {message.chat.id}")
+        bot.send_message(ALLOWED_ID, f"⚠️ Unauthorized `.bat` list attempt by user {message.chat.id}", parse_mode='Markdown')
 
 @bot.callback_query_handler(func=lambda call: True)
 def handle_file_selection(call):
@@ -107,18 +107,19 @@ def handle_file_selection(call):
         bat_file = call.data
         if bat_file in list_bat_files():
             try:
+                bat_file = f".\\bats\\{bat_file}"
                 subprocess.run(bat_file, shell=True, check=True)
                 bot.answer_callback_query(call.id, f"`{bat_file}` executed successfully!")
                 logging.info(f'{bat_file} executed by user {call.from_user.id}')
             except subprocess.CalledProcessError as e:
-                bot.answer_callback_query(call.id, f"Failed to execute `{bat_file}`: {e}", parse_mode='Markdown')
+                bot.answer_callback_query(call.id, f"Failed to execute `{bat_file}`: {e}")
                 logging.error(f"Failed to execute {bat_file}: {e}")
         else:
             bot.answer_callback_query(call.id, "File not found.")
             logging.error(f"File {bat_file} not found.")
     else:
-        logging.warning(f"⚠️ Unauthorized `.bat` execution attempt by user {call.from_user.id}", parse_mode='Markdown')
-        bot.send_message(ALLOWED_ID, f"⚠️ Unauthorized .bat execution attempt by user {call.from_user.id}")
+        logging.warning(f"⚠️ Unauthorized .bat execution attempt by user {call.from_user.id}")
+        bot.send_message(ALLOWED_ID, f"⚠️ Unauthorized `.bat` execution attempt by user {call.from_user.id}", parse_mode='Markdown')
 
 #########################
 # Main bot polling loop #
