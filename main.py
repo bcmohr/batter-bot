@@ -59,7 +59,7 @@ def list_bat_files():
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     if message.chat.id == ALLOWED_ID:
-        bot.send_message(message.chat.id, "👋🤖")
+        bot.send_message(message.chat.id, "💯")
         logging.info(f'Bot started by user {message.chat.id}')
     else:
         logging.warning(f"⚠️ Unauthorized start attempt by user {message.chat.id}")
